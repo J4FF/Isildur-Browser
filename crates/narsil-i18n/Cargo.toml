@@ -1,0 +1,16 @@
+[package]
+name = "narsil-i18n"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+# Translations of the browser's own user interface (menus, settings,
+# internal pages, status messages). No dependencies on purpose: every UI
+# crate (narsil-browser, narsil-chrome, narsil) can depend on it without
+# creating a cycle.
+
+[lints]
+workspace = true
+
+[dependencies]

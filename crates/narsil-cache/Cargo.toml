@@ -1,0 +1,17 @@
+[package]
+name = "narsil-cache"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+
+[dependencies]
+# KEINE Abhaengigkeiten. Der Cache arbeitet mit eigenen Minimal-Typen
+# ([`Anfrage`], [`Antwort`]), damit er nicht vom Netz-Layer gekoppelt ist.
+# `narsil-net` haengt selbst von `narsil-compress`, das in Welle 6 gerade
+# umgebaut wird — eine Abhaengigkeit von dort wuerde den Cache mit
+# fremden Baustellen verbinden.

@@ -1,0 +1,138 @@
+[package]
+name = "narsil"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "DER BROWSER: Fenster, Adressleiste, Tastatur, Klicks, Netz."
+
+[lints]
+workspace = true
+
+[dependencies]
+# Translations of status messages, internal pages and error pages.
+narsil-i18n = { path = "../narsil-i18n" }
+narsil-media = { path = "../narsil-media" }
+narsil-core = { path = "../narsil-core" }
+narsil-css = { path = "../narsil-css" }
+# W6 (J9/J10): der geparste HTML-Baum, aus dem die Seite nach einem
+# `textContent` neu gebaut wird (siehe `narsil_page::Patch`).
+narsil-fmt-html = { path = "../narsil-fmt-html" }
+narsil-dom = { path = "../narsil-dom" }
+narsil-layout = { path = "../narsil-layout" }
+narsil-layout-engine = { path = "../narsil-layout-engine" }
+narsil-display = { path = "../narsil-display" }
+narsil-raster = { path = "../narsil-raster" }
+narsil-text = { path = "../narsil-text" }
+narsil-page = { path = "../narsil-page" }
+# KONVERT_18: „Drucken / Seite als PDF speichern“ (Strg+P, Menue, PDF-Leiste).
+#
+# GEMESSEN, dass hier **kein Zyklus** entsteht: `narsil-konvert` haengt an
+# `narsil-core`, `narsil-image`, `narsil-compress`, `narsil-audio`, `narsil-media` und
+# `narsil-display` — und **keine** davon haengt an `narsil` (`grep narsil` in
+# deren `Cargo.toml` = 0 Treffer). Also zeigt die Kante **nach oben**: `narsil`
+# ist die Anwendung und darf den Konverter benutzen.
+#
+# GEMESSEN, warum `src/sitzung.rs` **minimal** angefasst wird und keine neue
+# Datei: `Sitzung` kennt **die Seite** (`self.angebildet`), **die Meldung**
+# (`self.meldung`) und **die Tabs** (`self.tabs`, `tab_neu()`) **gleichzeitig**.
+# Eine neue Datei muesste auf alle drei zugreifen — also waere sie weniger
+# minimal, nicht mehr.
+narsil-konvert = { path = "../narsil-konvert" }
+# Eigene Bytecode-VM; das Netzwerk-Feature verbindet fetch mit dem Browser.
+narsil-jsvm = { path = "../narsil-jsvm", features = ["narsil-net"] }
+# I3: Bilder dekodieren (PNG, JPEG, BMP).
+narsil-image = { path = "../narsil-image" }
+narsil-canvas = { path = "../narsil-canvas" }
+narsil-svg = { path = "../narsil-svg" }
+narsil-browser = { path = "../narsil-browser" }
+narsil-chrome = { path = "../narsil-chrome" }
+narsil-input = { path = "../narsil-input" }
+narsil-url = { path = "../narsil-url" }
+narsil-net = { path = "../narsil-net" }
+# added 03.10.2026, Rolle TLS (Freigabe der Leitung 23:0x, "die Aufrufstellen in
+# crates/narsil SELBST einzuhaengen"). **DIREKTE Abhaengigkeit**, und sie ist
+# noetig, nicht bequem: `laden.rs` braucht `narsil_tls::info::zertifikatswarnung`,
+# um aus einem `NetError::Kette` die Kategorie der Warnseite zu machen. Ueber
+# `narsil_net` ginge es **nicht** — Rust laesst nur die Crates benennen, die auch
+# direkte Abhaengigkeiten sind. **UND ES IST KEIN ZYKLUS**, GEMESSEN:
+# `crates/narsil-tls/Cargo.toml` nennt `narsil` nicht.
+narsil-tls = { path = "../narsil-tls" }
+# W5F: der gzip-Test baut echte gzip-Bytes mit derselben Crate, die
+# narsil-net zum Entpacken benutzt.
+narsil-ext = { path = "../narsil-ext" }
+narsil-download = { path = "../narsil-download" }
+narsil-print = { path = "../narsil-print" }
+# UI-VORLAGE Schritt 6 (02.10.): der PDF-Betrachter braucht die gerenderte
+# Seite. GEMESSENE ENTSCHEIDUNG, warum hier und nicht in `narsil-chrome`:
+# `narsil-chrome` ist ZUSTAND und GEOMETRIE und kennt ausser `narsil-browser`
+# keine Fremd-Crate (so steht es in `team/WUNSCH_UI.txt`); `narsil` zeichnet.
+# GEMESSENE ENTSCHEIDUNG, warum es ueberhaupt noetig ist: `Renderer::seite()`
+# liefert `Seitenbild { png, breite, hoehe }` — die Seite als PNG, fertig zum
+# Zeichnen. Ohne diese Crate ist das Blatt weiss (gemessen im Bild
+# `ui_vorlage_6_pdf_leiste.png`).
+narsil-pdf = { path = "../narsil-pdf" }
+# KOMPRESS 04.10.2026 (Anordnung der Leitung: „Ton aus dem Lautsprecher,
+# Nachweis mit Bild"): der TON.
+#
+# GEMESSENE ENTSCHEIDUNG, und sie ist eine Messung an der Abhaengigkeits-
+# richtung: `narsil-audio` haengt an **keinem anderen** Crate (es braucht
+# keinen Parser und kein Netz), und `narsil` haengt an keiner Crate mit
+# Audio. Also entsteht **kein** Zyklus — in **beiden** Richtungen geprueft.
+#
+# GEMESSENER WEG des Tons: `Spieler::mit_kindprozess(daten, &Weg::automatisch())`
+# startet `pw-play` (GEMESSEN auf dieser Maschine: `Weg PwPlay`,
+# `Weg::automatisch()` probiert `pw-play` **zuerst`). GEMESSEN in G9e:
+# `Zustand Spielt`, am Ende `Zustand Fertig`, `1,0000 s von 1,0000 s`,
+# `0 Byte verworfen`.
+narsil-audio = { path = "../narsil-audio" }
+narsil-verlauf = { path = "../narsil-verlauf" }
+narsil-compress = { path = "../narsil-compress" }
+# Release 08.10.2026: die Ruhe-Listen (Cookie-Banner, Stoerer) fuer die
+# Features 9 und 11 — derselbe Leser und Pruefer wie der Werbeblocker.
+narsil-adblock = { path = "../narsil-adblock" }
+# KOMPRESS 04.10.2026: `X11Surface` ist in `narsil-window` **nur** unter
+# dem Feature `x11` konfiguriert (GEMESSEN: `no X11Surface in the root` /
+# `found an item that was configured out`, `narsil-window/src/lib.rs:27`).
+# Also wird es hier **direkt** eingeschaltet — sonst kann das Beispiel
+# `kompress_ton_nachweis` (Nachweis: Fenster, Bild, **physischer** Klick)
+# nicht bauen. `narsil-window` ist in `WUNSCH_KOMPRESS.txt` **STELLE 1**
+# angekuendigt.
+narsil-window = { path = "../narsil-window" }
+# D9 (01.10.2026, AUTONOM.txt Zeile 589, Freigabe „neue Datei
+# narsil/src/devtools_bruecke.rs + minimale Einhaengung"): die Entwickler-
+# werkzeuge. Abhaengigkeit in EINE Richtung — narsil-devtools kennt narsil
+# NICHT (es zeichnet eine DisplayList, kein Fenster), also gibt es keinen
+# Zyklus. Reihenfolge hier wie im Rest der Liste: nach dem Fenster.
+narsil-devtools = { path = "../narsil-devtools" }
+# D6 (04.10.2026, 2:2x): WebAssembly-Daten fuer den Reiter.
+#
+# GEMESSENE ENTSCHEIDUNG, warum die Abhaengigkeit HIER und nicht in
+# `narsil-devtools`: `narsil-wasm` (15 000 Zeilen, Rolle WASM in Arbeit) wird
+# ueberall dort gebaut, wo es steht. In meiner Crate wuerde es die 82 Tests
+# und `bild_beweis` mit in die Wartezone einer fremden Aenderung ziehen; in
+# `narsil` steht es neben `narsil-jsvm` und `narsil-net`, die es ohnehin schon
+# mitziehen. Die Umrechnung gehoert trotzdem in die Bruecke: sie ist der
+# einzige Ort, der beide Crate kennt.
+narsil-wasm = { path = "../narsil-wasm" }
+
+[features]
+default = ["desktop"]
+desktop = ["narsil-window/desktop"]
+# ADR-020: Das Fenster braucht X11. Ohne das Feature baut narsil, kann
+# aber kein Fenster oeffnen — und das ist ein SAUBERER Fehler, kein
+# stiller Weg ohne Bildschirm (ADR-006 bleibt in Kraft).
+x11 = ["narsil-window/x11"]
+
+[[bin]]
+name = "narsil"
+path = "src/main.rs"
+
+# GEMESSEN 05.10.2026 (Nachfolge-Agent): `kompress_ton_nachweis` importiert
+# `X11Surface` (Zeile 68). Das Beispiel ist ein Weg-Zeuge fuer den
+# X11-Pfad (Fenster, Bild, physischer Klick) — dieselbe Lage wie bei
+# `narsil-window/examples/klick_beweis.rs`, und dieselbe Begruendung:
+# `#[cfg(feature)]` wuerde das Beispiel zu einer leeren `main`
+# machen und der Aufruf waere stumm erfolgreich.
+#     error[E0432]: unresolved import `narsil_window::X11Surface`
+#     error: could not compile `narsil` (example "kompress_ton_nachweis")

@@ -1,0 +1,54 @@
+[package]
+name = "narsil-chrome"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+# NACHGETRAGT 12:28 (neuer Agent1). Der Import `use narsil_browser::Browser;`
+# stand hier seit 11:36, ohne dass die Zeile in [dependencies] existierte --
+# Agent5s Crate war beim Abbruch halb geschrieben und der Workspace
+# dadurch rot. narsil-browser baut und liegt im Workspace, die
+# Abhaengigkeit ist also die kleinste Reparatuer.
+narsil-browser = { path = "../narsil-browser" }
+# Translations of every string the chrome draws (menus, settings, panels).
+narsil-i18n = { path = "../narsil-i18n" }
+narsil-core = { path = "../narsil-core" }
+narsil-display = { path = "../narsil-display" }
+# KONVERT_23: der **Anschluss** zwischen der Download-Liste (`narsil-download`,
+# KONVERT) und der Anzeige (`downloads.rs`, DEVTOOLS/UI). GEMESSEN, dass **kein**
+# Zyklus entsteht: `narsil-download` haengt an **keiner** Crate, die `narsil-chrome`
+# braucht — es haengt an `narsil-media` und benutzt sonst nur std. Also zeigt die
+# Kante von der Crate zur **Anzeige**.
+narsil-download = { path = "../narsil-download" }
+# LEITUNG (03.10., 08:05): „Die .svg-Dateien zur Bauzeit per include_str!
+# einbinden und mit dem SVG-Raster von narsil-image (svg.rs, gegen cairosvg
+# geprueft) in Zielgroesse rastern, currentColor durch Themenfarbe ersetzen.“
+# GEMESSENE ENTSCHEIDUNG, warum das eine NORMALE Abhaengigkeit wird und
+# keine [dev-dependencies]-Zeile: die Icons sind IN der Oberflaeche, sie
+# werden beim Bauen der Leiste gezeichnet, nicht in einem Test. Mit
+# `dev-dependencies` waere `symbole::zeichne` (20 Aufrufstellen in diesem
+# Crate) leer. Der Vermerk „die Crate zeichnet nichts“ galt fuer die
+# ALTEN Figuren aus Formen; mit den Dateien aus `team/design/icons`
+# zeichnet die Crate jetzt fremde Pfade.
+narsil-image = { path = "../narsil-image" }
+# KONTEXT (03.10.2026): DIE ANBINDUNG DES UNTERMENUES AN DEN ENKODER.
+#
+# GEMESSENER BEFUND (team/WUNSCH_KONVERT.txt, 04.10., Tabelle der sieben
+# Glieder der Kette): Glied 6 — „etwas zum Konvertieren" — war
+# „Abhaengigkeit fehlt": `narsil-chrome` haengte **nicht** an `narsil-konvert`,
+# und die Zielliste war eine Platzhalterliste aus dem Wortlaut des Nutzers
+# (`src/konvert.rs`). GEMESSENE ENTSCHEIDUNG, warum das eine NORMALE
+# Abhaengigkeit ist und keine `[dev-dependencies]`-Zeile: `ktx_konvert::ziele`
+# und `ktx_konvert::konvertiere` werden beim **Oeffnen des Untermenues** und
+# beim **Klick** gerufen — also im Betrieb der Oberflaeche, nicht in einem
+# Test. Mit `dev-dependencies` waere `Menue::ziele()` leer.
+# GEMESSENE ENTSCHEIDUNG, warum keine Zyklus-Gefahr besteht: `narsil-konvert`
+# haengt an `narsil-image` und `narsil-compress`, an **keiner** Chrome-Crate
+# (`grep -n "narsil-chrome" crates/narsil-konvert/Cargo.toml` = 0 Treffer).
+narsil-konvert = { path = "../narsil-konvert" }
+

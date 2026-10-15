@@ -1,0 +1,12 @@
+[package]
+name = "narsil-audio"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "TON — PCM-Ausgabe, Lautstaerke, Pause. Dekoder fuer Ogg/Vorbis und Opus."
+
+[lints]
+workspace = true
+
+[dependencies]

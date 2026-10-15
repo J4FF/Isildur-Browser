@@ -1,0 +1,77 @@
+! Grundliste des Werbefilters — Herkunft und Lizenz
+! =================================================
+!
+! Diese Datei ist KEIN Auszug aus EasyList. Sie ist von Hand fuer dieses
+! Projekt geschrieben und enthaelt nur Muster, die als Werbung
+! erkennbar sind UND keine normale Seite treffen.
+!
+! WARUM KEIN AUSZUG, obwohl EasyList unter der freien Lizenz
+! GPLv3 steht: EasyList ist ~50 000 Zeilen gross und ihre Liste aendert
+! sich taeglich. Eine eingebettete Kopie muesste dann mit gepflegt
+! werden, und die Pflege ist eine eigene Aufgabe. Diese Liste hier ist
+! ein GRUNDGERUEST: sie beweist den Mechanismus und liefert die
+! Abnahme, und sie kann durch eine echte Liste ersetzt werden, ohne
+! dass sich Code aendert.
+!
+! GEGENLICHT (gemessen bei der Abnahme): absichtlich konservativ. Eine
+! Liste, die zu viel blockiert, nimmt dem Nutzer Seiten weg, und das ist
+! schlimmer als Werbung. Jede Regel hier muss begruendbar sein.
+!
+! Herkunft: eigene Zusammenstellung, 02.10.2026, Rolle CSS.
+! Lizenz: wie das Projekt (MIT). Kein Fremdtext uebernommen.
+!
+! REGELN:
+!   ! Kommentar
+!   [Adblock Plus 2.0]   — Listenkopf, damit die Datei auch als
+!                            gebaute Filterliste lesbar ist
+!   @@||host^            — Ausnahme: diese Seite bleibt IMMER frei
+!   ||host^pfad           — Netzregel mit Domainanker
+!   host##selektor       — kosmetisch: auf diesem Host verstecken
+
+[Adblock Plus 2.0]
+! ------------------------------------------------------------------
+! ANFRAGE-REGELN
+! ------------------------------------------------------------------
+! Messdienste und Zaehlpixel. Beide Muster sind so eng, dass sie keine
+! normale Seite treffen: ein Messdienst traegt seinen Pfad im Namen.
+||doubleclick.net^
+||google-analytics.com/analytics.js
+||googletagmanager.com/gtag/js
+||scorecardresearch.com^
+||quantserve.com^
+||outbrain.com^/widgets/
+||taboola.com^/sdk/
+||criteo.com^/js/
+||adservice.google.com^
+||pagead2.googlesyndication.com^
+||securepubads.g.doubleclick.net^
+||amazon-adsystem.com^
+
+! Werbeflaechen als Netzregel: die Bildnamen sind eindeutig.
+||ads.doubleclick.net^
+||images.weserv.nl/?url=*banner*  $image
+
+! ------------------------------------------------------------------
+! AUSNAHMEN — EINE LISTE, DIE ZU BREIT BLOCKIERT, MACHT EINE SEITE
+! UNBEDIENBAR. Deshalb stehen hier die Seiten, auf denen Werbung fuer
+! den Nutzer nuetzlich ist.
+! ------------------------------------------------------------------
+@@||wikipedia.org^
+@@||github.com^
+@@||archlinux.org^
+@@||developer.mozilla.org^
+
+! ------------------------------------------------------------------
+! KOSMETISCHE REGELN
+! ------------------------------------------------------------------
+! Gemeine Werbe-Kaesten. Die Selektoren sind Klassen und IDs, die
+! ausschliesslich fuer Werbung benutzt werden — kein `.ad` als Teil
+! eines normalen Wortes.
+generic.com##.ad-container
+generic.com##.sponsor-banner
+generic.com##div[id^="google_ads_"]
+generic.com##.taboola-container
+generic.com##.outbrain-widget
+generic.com##iframe[src*="doubleclick.net"]
+! Ohne Host gilt die Regel ueberall.
+##.narsil-testbanner

@@ -1,0 +1,13 @@
+[package]
+name = "narsil-quic"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "QUIC und HTTP/3 in reinem Rust (RFC 9000/9001/9002/9114)."
+
+[lints]
+workspace = true
+
+[dependencies]
+narsil-tls = { path = "../narsil-tls" }

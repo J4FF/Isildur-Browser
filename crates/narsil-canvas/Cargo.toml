@@ -1,0 +1,12 @@
+[package]
+name = "narsil-canvas"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "Software renderer for the HTML Canvas 2D API: paths, strokes, paints, compositing, shadows, images and text."
+
+[lints]
+workspace = true
+
+[dependencies]

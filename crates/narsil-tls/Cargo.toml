@@ -1,0 +1,26 @@
+[package]
+name = "narsil-tls"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints.rust]
+# Nur die Windows-Systemzufallsgrenze darf unsafe verwenden (lib.rs).
+unsafe_code = "deny"
+
+[dependencies]
+# The certificate warning page is shown to the user in the UI language.
+narsil-i18n = { path = "../narsil-i18n" }
+
+# added 03.10.2026, Rolle TLS (Auftrag: Bild-Parser fuzzing). **NUR fuer den
+# Test** `tests/fuzz_blindheit_bild.rs`, und der Grund ist eine **Messluecke**,
+# keine Abhaengigkeit: der Fuzzlauf ueber `ziel_bild` meldet „100000 Faelle,
+# 0 Paniken" — aber **nicht**, wie viele davon ueberhaupt dekodiert wurden. Ohne
+# diese Zeile kann ich die Zahl nicht messen, und eine Panikzahl ohne
+# Erreichbarkeit ist die dritte Art von „gruen und blind" (die ersten beiden
+# waren der doppelte Port in `Request::get` und die behauptete Byte-Laenge).
+#
+# **UND ES IST KEIN ZYKLUS**, GEMESSEN: `crates/narsil-image/Cargo.toml` nennt
+# `narsil-tls` nicht. `[dev-dependencies]` wirkt nur auf `cargo test`, also
+# aendert diese Zeile **nichts** an dem, was `narsil-tls` baut.

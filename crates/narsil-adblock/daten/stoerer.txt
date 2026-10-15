@@ -1,0 +1,96 @@
+[Adblock Plus 2.0]
+! Release 08.10.2026: STOERER (Feature 9, „Bitte nicht stoeren").
+!
+! Newsletter-Fenster, Chat-Blasen, Benachrichtigungs-Fragen und
+! bildschirmfuellende Overlays. Netzregeln sperren die Skripte bekannter
+! Chat- und Push-Dienste; kosmetische Regeln blenden ihre Fenster aus.
+!
+! ------------------------------------------------------------------
+! CHAT-WIDGETS (Netz)
+! ------------------------------------------------------------------
+||widget.intercom.io^
+||js.intercomcdn.com^
+||js.driftt.com^
+||static.zdassets.com/ekr/
+||embed.tawk.to^
+||client.crisp.chat^
+||js.hs-scripts.com^
+||js-eu1.hs-scripts.com^
+||js.usemessages.com^
+||cdn.livechatinc.com^
+||widget.tidio.co^
+||code.tidio.co^
+||static.olark.com^
+||wchat.freshchat.com^
+||beacon-v2.helpscout.net^
+||js.chatra.io^
+||cdn.jsdelivr.net/npm/@chatwoot
+||app.chatwoot.com/packs/js/sdk.js
+! ------------------------------------------------------------------
+! PUSH-BENACHRICHTIGUNGS-FRAGEN (Netz)
+! ------------------------------------------------------------------
+||cdn.onesignal.com^
+||onesignal.com/sdks/
+||cdn.pushcrew.com^
+||clientcdn.pushengage.com^
+||static.cleverpush.com^
+||cdn.webpushr.com^
+||sdk.pushnami.com^
+! ------------------------------------------------------------------
+! CHAT-FENSTER (kosmetisch)
+! ------------------------------------------------------------------
+##[id="intercom-container"]
+##.intercom-lightweight-app
+##[id="drift-widget-container"]
+##[id="drift-frame-controller"]
+##[id="launcher"][title*="Chat"]
+##[id="tidio-chat"]
+##[id="hubspot-messages-iframe-container"]
+##[id="chat-widget-container"]
+##.crisp-client
+##[id="crisp-chatbox"]
+##[id="fc_frame"]
+##.zopim
+##[id="tawkchat-container"]
+##.tawk-min-container
+##[id="olark-wrapper"]
+##[id="beacon-container"]
+##.woot-widget-holder
+##.woot--bubble-holder
+! ------------------------------------------------------------------
+! BENACHRICHTIGUNGS- UND NEWSLETTER-FENSTER (kosmetisch)
+! ------------------------------------------------------------------
+##[id="onesignal-slidedown-container"]
+##[id="onesignal-popover-container"]
+##[id="onesignal-bell-container"]
+##.onesignal-customlink-container
+##.cleverpush-confirm
+##.pushcrew-chrome-style-notification
+##[id="webpushr-prompt-wrapper"]
+##.newsletter-popup
+##.newsletter-modal
+##.newsletter-overlay
+##[id="newsletter-popup"]
+##[id="newsletter-modal"]
+##.mc-modal
+##.mc-banner
+##[id="mc_embed_signup_popup"]
+##.klaviyo-form-popup
+##.needsclick.kl-private-reset-css-Xuajs1
+##[id="optinmonster-holder"]
+##.om-holder
+##[id^="om-"][id$="-holder"]
+##.sumo-form-wrapper
+##[id="sumome-smartbar-popup"]
+##.privy-popup-container
+##.popup-overlay.newsletter
+##.exit-intent-popup
+##.subscribe-popup
+##.signup-modal
+! ------------------------------------------------------------------
+! UMFRAGEN
+! ------------------------------------------------------------------
+##[id="hotjar-survey"]
+##._hj_feedback_container
+##.qualaroo-container
+##[id="QSIFeedbackButton-btn"]

@@ -1,0 +1,22 @@
+[package]
+name = "narsil-download"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+# KONVERT_24: der Download laeuft ueber **denselben** Netzweg wie eine Seite.
+# GEMESSEN, dass **kein Zyklus** entsteht: `narsil-net` nennt `narsil-download` und
+# `narsil-chrome` **nicht** (`grep -c` = 0). Also zeigt die Kante von der Anwendung
+# zum Netz, und `narsil-download` bleibt darunter.
+#
+# GEMESSENE ENTSCHEIDUNG, warum das **hier** gehoert und **nicht** in `narsil`:
+# `narsil-net` ist eine **Crate**, und eine Crate darf nicht von der Anwendung
+# abhaengen — sonst muesste `narsil` den Netzweg **selbst** aufrufen, und dann
+# gaebe es **zwei** Orte, an denen ein Download startet. Also: die Crate ruft das
+# Netz, die Anwendung **nimmt** nur die Liste entgegen.
+narsil-net = { path = "../narsil-net" }
+
+[lints]
+workspace = true

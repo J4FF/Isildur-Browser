@@ -1,0 +1,68 @@
+[Adblock Plus 2.0]
+! Release 08.10.2026: COOKIE-BANNER (Feature 11, Cookie-Autopilot).
+!
+! Die Fenster der verbreiteten Einwilligungs-Plattformen (CMP). Sie werden
+! ausgeblendet, NACHDEM das eingebaute Skript den Ablehnen-Knopf gesucht und
+! geklickt hat (siehe narsil/src/features/ruhe.rs). Es sind nur Kennungen, die
+! ausschliesslich fuer Einwilligungsfenster benutzt werden.
+!
+! OneTrust
+##[id="onetrust-banner-sdk"]
+##[id="onetrust-consent-sdk"]
+##.onetrust-pc-dark-filter
+! Cookiebot
+##[id="CybotCookiebotDialog"]
+##[id="CybotCookiebotDialogBodyUnderlay"]
+! Usercentrics
+##[id="usercentrics-root"]
+##[id="usercentrics-cmp-ui"]
+! Quantcast / InMobi Choice
+##.qc-cmp2-container
+##[id="qc-cmp2-container"]
+! Didomi
+##[id="didomi-host"]
+##.didomi-popup-backdrop
+! TrustArc
+##[id="truste-consent-track"]
+##.truste_overlay
+##.truste_box_overlay
+! consentmanager.net
+##[id="cmpbox"]
+##[id="cmpbox2"]
+##[id="cmpwrapper"]
+! Borlabs Cookie
+##[id="BorlabsCookieBox"]
+##[id="BorlabsCookieWidget"]
+! Complianz
+##[id="cmplz-cookiebanner-container"]
+##.cmplz-cookiebanner
+! CookieYes / Cookie Law Info
+##.cky-consent-container
+##.cky-overlay
+##[id="cookie-law-info-bar"]
+! Osano
+##.osano-cm-window
+##.osano-cm-dialog
+! Klaro
+##.klaro .cookie-notice
+##.klaro .cookie-modal
+! iubenda
+##[id="iubenda-cs-banner"]
+! Sourcepoint
+##[id^="sp_message_container_"]
+! Cookie Notice (WordPress), GDPR Cookie Compliance, Termly, Civic
+##[id="cookie-notice"]
+##[id="moove_gdpr_cookie_info_bar"]
+##[id="termly-code-snippet-support"]
+##[id="ccc"]
+##[id="ccc-overlay"]
+! Allgemeine, eindeutige Namen
+##[id="cookie-banner"]
+##[id="cookieBanner"]
+##[id="cookie-consent"]
+##[id="cookieConsent"]
+##[id="gdpr-cookie-notice"]
+##.cookie-banner
+##.cookie-consent-banner
+##.cc-window
+##.cc-banner

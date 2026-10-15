@@ -1,0 +1,71 @@
+[package]
+name = "narsil-konvert"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "KONVERT — Enkoder und Pipeline: Bild, Ton, Video in andere Formate umrechnen. Nur std, kein unsafe."
+
+[lints]
+workspace = true
+
+# KONVERT baut die ENKODER. Die DEKODER liegen in fremden Crates und werden nur
+# **gelesen** (ADR-030: keine Fremd-Crates aus dem Netz, nur std).
+#
+#   narsil-image    -> `Bild` (RGBA8) + alle Bilddekoder + `vp8_lesen`
+#   narsil-compress -> `deflate` und `adler32`/`crc32_zwei` fuer PNG-Chunks
+#
+# **`narsil-audio` und `narsil-media` sind seit 03.10.2026 NORMALE Abhaengigkeiten.**
+# Auftrag der LEITUNG: „bei echten WebM-Dateien fehlen 'nur Ton' (Ton ueber
+# narsil-audio dekodieren) und 'animiertes GIF' (Einzelbilder ueber narsil-media/vp8)“.
+#
+# GEMESSEN, **keine Zyklusgefahr**:
+#   * `narsil-audio` hat **null** Abhaengigkeiten (`Cargo.toml`: leere
+#     `[dependencies]`) — reines std
+#   * `narsil-media` haengt **nur** an `narsil-image`, nicht an `narsil-konvert`
+#   * `grep -n "narsil-media" crates/narsil-konvert/Cargo.toml` war **0 Treffer**
+#
+# GEMESSEN, **was** drin ist (nicht geraten). `narsil-audio/src/videoton.rs`
+# Z. 38-40 nennt den Stand selbst:
+#
+# | Codec / Container | Stand dort                |
+# |-------------------|---------------------------|
+# | **Vorbis / WebM** | **fertig**, Abnahme 101,9 dB |
+# | Opus / WebM       | Dekoder **nicht gebaut**  |
+# | AAC / MP4         | **nichts gebaut**        |
+#
+# Und `narsil_media::extract_packets` liefert `Vec<Packet { track_num, data,
+# timecode }>`, `narsil_image::vp8::vp8_lesen` liefert daraus ein `Bild`.
+#
+# **NACHRICHT, warum das nicht `dev-dependency` bleibt** (die alte Sorge aus
+# 02.10.2026): ein dev-dependency ist fuer **Tests** richtig — dort schickte
+# K13 seine Analyse in die Synthese des Dekoders als Orakel. Fuer die **Neuerung**
+# des WebM-Weges muss es **normal** sein, denn `ziele_fuer` und `konvertiere`
+# brauchen es zur **Laufzeit**, nicht nur im Test.
+[dependencies]
+narsil-core = { path = "../narsil-core" }
+narsil-image = { path = "../narsil-image" }
+narsil-compress = { path = "../narsil-compress" }
+narsil-audio = { path = "../narsil-audio" }
+narsil-media = { path = "../narsil-media" }
+# **GEMESSEN, dass hier kein Zyklus entsteht** (04.10.2026, KONVERT_16): die
+# vier Abhaengigkeiten von `narsil-display` sind `narsil-core`, `narsil-text`,
+# `narsil-parser` und `narsil-layout-engine`, und **keine** davon nennt
+# `narsil-konvert` in ihrer `Cargo.toml` (`grep -c` = 0 fuer alle vier). Also
+# haengt die Richtung **richtig**: mein Crate darf `narsil-display` einbinden, und
+# `narsil-display` darf mich nicht einbinden — sonst waere es ein Ring.
+#
+# **Und warum normal, nicht `dev-dependency`:** „Seite drucken“ ist eine
+# **Laufzeit**-Funktion. Die DisplayList kommt aus `narsil-display` und wird im
+# Browser **w aehrend des Druckens** gebraucht, nicht nur im Test — dieselbe
+# Begruendung wie bei `narsil-media` oben.
+narsil-display = { path = "../narsil-display" }
+# Und **narsil-core** kommt **nicht** durch Zufall dazu: `narsil-display`s
+# **oeffentliche** API ist aus `narsil_core`-Typen gebaut — `DisplayItem::rechteck`
+# nimmt ein `narsil_core::Rect` und eine `narsil_core::Color`, und `DisplayItem::Text`
+# traegt ein `narsil_core::Point` (GEMESSEN, `crates/narsil-display/src/lib.rs`
+# Z. 233 und Z. 171-177). Wer ein `DisplayItem` **bauen** will, braucht also
+# `narsil-core` **selbst**; es reicht nicht, es durch `narsil-display` hindurch zu
+# benutzen. GEMESSEN ist, dass auch hier kein Zyklus entsteht: `narsil-core` nennt
+# `narsil-konvert` nicht (`grep -c` = 0).
+

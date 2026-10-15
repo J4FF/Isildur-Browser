@@ -1,0 +1,13 @@
+[package]
+name = "narsil-compress"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "INFLATE/DEFLATE, gzip und zlib in reinem Rust."
+
+[lints]
+workspace = true
+
+[dependencies]
+narsil-core = { path = "../narsil-core" }

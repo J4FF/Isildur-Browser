@@ -1,0 +1,17 @@
+[package]
+name = "narsil-layout"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "Layout-Baum: geometrisch aufgeloeste Boxen zwischen DOM und Display-List."
+
+[lints]
+workspace = true
+
+[dependencies]
+narsil-core = { path = "../narsil-core" }
+narsil-dom = { path = "../narsil-dom" }
+# W5G: die Messung liegt hier, weil `narsil-page` UND `narsil-raster` sie
+# brauchen und beide ueber diesen Crate gehen. Nur `std` + narsil-text.
+narsil-text = { path = "../narsil-text" }

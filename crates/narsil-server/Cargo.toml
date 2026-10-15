@@ -1,0 +1,22 @@
+[package]
+name = "narsil-server"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "Webserver- & API-Bibliothek in reinem Rust: HTTP/1.1, Router, Static, REST/JSON, WebSocket. Kein Fremdcrate."
+
+[lints]
+workspace = true
+
+[dependencies]
+narsil-compress = { path = "../narsil-compress" }
+# added 01.10.2026, R3: der HTTPS-Weg in `src/tls.rs`. Kein
+# Fremdcrate — `narsil-tls` ist die eigene TLS-1.3-Crate (R1/R1d).
+narsil-tls = { path = "../narsil-tls" }
+# added 02.10.2026, SERVER V9: das HTTP/3-Grundgeruest in `src/h3.rs`
+# liest HTTP/3-Frames und QPACK-Feldabschnitte aus `narsil-quic`. Es
+# SCHREIBT dort nicht (nur lesen, Regel 4): die Bytes entstehen im
+# Test und im Beispiel aus `narsil_quic::h3_schreiben`.
+narsil-quic = { path = "../narsil-quic" }
+

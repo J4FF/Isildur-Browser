@@ -1,0 +1,196 @@
+[workspace]
+resolver = "3"
+
+members = [
+    "crates/narsil-core",
+    "crates/narsil-dom",
+    "crates/narsil-layout",
+    "crates/narsil-display",
+    "crates/narsil-parser",
+    "crates/narsil-text",
+    "crates/narsil-raster",
+    "crates/narsil-layout-engine",
+    "crates/narsil-window",
+    "crates/narsil-app",
+    "crates/narsil-fmt-text",
+    "crates/narsil-fmt-md",
+    "crates/narsil-fmt-html",
+    "crates/narsil-page",
+    "crates/narsil-input",
+    "crates/narsil-url",
+    "crates/narsil-net",
+    "crates/narsil-browser",
+    "crates/narsil-i18n",
+    "crates/narsil-chrome",
+    "crates/narsil-image",
+    "crates/narsil",
+    "crates/narsil-server",
+    "crates/narsil-compress",
+    "crates/narsil-tls",
+    "crates/narsil-css",
+    "crates/narsil-jsvm",
+    "crates/narsil-cache",
+    "crates/narsil-quic",
+    "crates/narsil-ext",
+    "crates/narsil-download",
+    "crates/narsil-print",
+    "crates/narsil-verlauf",
+    "crates/narsil-media",
+    "crates/narsil-vp9",
+    "crates/narsil-audio",
+    "crates/narsil-wasm",
+    "crates/narsil-devtools",
+    "crates/narsil-adblock",
+    "crates/narsil-pdf",
+    "crates/narsil-konvert",
+    "crates/narsil-canvas",
+    "crates/narsil-svg",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+publish = false
+
+[workspace.lints.rust]
+# Architekturregel 6 (unsafe minimieren) wird maschinell erzwungen.
+# Ein Crate, der es wirklich braucht, muss das lokal begruenden + ueberschreiben.
+unsafe_code = "forbid"
+
+# ---------------------------------------------------------------------------
+# BAUPROFILE — am 30.09.2026 von der Leitung geaendert, aus einem gemessenen
+# Grund. GEMESSEN um 02:50: Swap 5 GiB belegt, Platte zu 92 % voll,
+# 1203 Artefakte in target/debug/deps, target/ 3,9 GiB. Und es gab KEINEN
+# [profile.dev]-Eintrag, also volle Debuginformation (debug = 2) fuer jeden
+# Bau. Debuginformation ist der groesste Einzelposten beim LINKEN — und das
+# Linken ist der Schritt, der beim Absturz den Speicher gefressen hat.
+#
+# debug = "line-tables-only" ist der Kompromiss: ZEILENNUMMERN in einem
+# Panic-Backtrace bleiben erhalten (dieses Projekt braucht sie fuer die
+# Gegenbeweise), aber die vollstaendigen Typ- und Variableninformationen
+# fallen weg. Das ist der groesste Teil der Einsparung.
+#
+# incremental = false sparte Speicher WAEHREND des Baues (inkrementelle
+# Zwischenstaende liegen im Speicher) und Platte. Preis: der zweite Bau
+# dauert etwas laenger. Bei 21 kleinen Crates sind das Sekunden.
+#
+# Release 11.10.2026: WIEDER incremental = true. GEMESSEN (32 GB RAM, 86 GB
+# frei, Integrationstests je Crate in EINEM Programm `tests/alle/`):
+# Testbau nach einer Aenderung in flow.rs 31-43 s -> 6 s (narsil-layout-
+# engine), 83 s -> 19-24 s (narsil).
+#
+# NICHT geaendert: [profile.release] mit lto = "thin". Release-Bauten sind
+# selten und werden nie parallel gefahren.
+# ---------------------------------------------------------------------------
+[profile.dev]
+debug = "line-tables-only"
+incremental = true
+
+[profile.test]
+debug = "line-tables-only"
+incremental = true
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+
+# Release 11.10.2026: Messlaeufe (WPT-Laeufer, website_diagnose) brauchen
+# schnelle NEUBAUTEN, nicht die letzten Prozent Laufzeit: ohne LTO, mit
+# 16 Codegen-Einheiten und inkrementell. Bau:
+#   cargo build --profile wpt -p narsil --example wpt_lauf
+# GEMESSEN in team/ARBEITSSTAND.md (Neubau nach einer Aenderung in flow.rs).
+[profile.wpt]
+inherits = "release"
+lto = false
+codegen-units = 16
+incremental = true
+
+# ---------------------------------------------------------------------------
+# REchenintensive Crates auch im Debug-/Test-Bau optimiert uebersetzen
+# (Koordination, 30.09.2026). GEMESSEN: ein TLS-Handshake kostete im
+# Debug-Bau 11-28 s gegen 1,1 s im Release-Bau - 99,75 % der Ladezeit einer
+# Seite (Messung der Rolle INTEGRATION, BERICHT_HTML_W7). Schrittweises
+# Debuggen braucht in diesen Crates niemand; Tempo braucht jeder.
+# Zeilennummern in Backtraces bleiben (debug = line-tables-only oben).
+# ---------------------------------------------------------------------------
+[profile.dev.package.narsil-tls]
+opt-level = 3
+[profile.dev.package.narsil-compress]
+opt-level = 3
+[profile.dev.package.narsil-image]
+opt-level = 3
+# Zeichnen (Rasterizer, Glyphen-Raster mit Antialiasing) ebenfalls optimiert:
+# GEMESSEN 30.09. 19:2x: Wikipedia 1000x900 = 60 ms je Bild im Debug-Bau,
+# also ~16 Bilder/s beim Scrollen.
+[profile.dev.package.narsil-raster]
+opt-level = 3
+[profile.dev.package.narsil-text]
+opt-level = 3
+# Der Fuzzer soll Millionen Faelle schaffen - Parser optimiert, Pruefungen bleiben.
+[profile.dev.package.narsil-css]
+opt-level = 3
+
+# DIE KASKADE AUCH IM DEBUG-BAU OPTIMIERT (Koordination, 02.10.2026,
+# Messauftrag der Rolle PROBE). GEMESSEN an github.com, gleicher Bau,
+# nur diese eine Zeile:
+#
+#   ohne diese Zeile    Kaskade 53 237 ms   laden 57 780 ms  (30-s-Grenze)
+#   mit  dieser Zeile    Kaskade  6 153 ms   laden 10 043 ms  (laedt)
+#
+# Faktor 8,6. `github.com` laedt damit zum ersten Mal statt in die
+# Zeitgrenze zu laufen (7 190 ms im Pruefstand).
+#
+# WARUM grade narsil-page: die Phase `kaskade` in `narsil` misst
+# `narsil_page::seite_aus_knoten_mit_messung`, nicht `narsil-css` direkt.
+# Und `impl Element for El` (narsil-page/src/kaskade.rs:169) ist der
+# ADRESSE, an der der Matcher arbeitet: `tag()`, `id()`, `hat_klasse()`,
+# `eltern()`, `naechstes_geschwister()` gehen alle ueber `self.knoten()`.
+# Jeder dieser Aufrufe ist eine echte Funktion aus einem
+# opt-level-0-Bau, mitten in einer Schleife, die der optimierte Matcher
+#millionenfach anstoesst. `narsil-css` selbst war schon auf 3 — die
+#halbe Arbeit war darum schneller, die andere Haelfte nicht.
+#
+# Das ist dieselbe Begruendung wie beim Eintrag fuer `narsil-css` oben
+# (Koordination, 01.10., K4c): der Nutzer startet target/debug/narsil,
+# ALSO ist die Debug-Zahl die, die er spuert. In narsil-page wird
+# genauso wenig Schritt fuer Schritt debuggt — es ist HTML-Bau und
+# Kaskade, und die laeuft fuer JEDES Element einer Seite.
+[profile.dev.package.narsil-page]
+opt-level = 3
+
+# RELEASE 08.10.2026: DER BILDWEG AUCH IM DEBUG-BAU OPTIMIERT. GEMESSEN
+# (`NARSIL_BILDZEIT=1`, Wikipedia, 1888 x 954, Mausrad): Liste 22 ms, Raster
+# 91 ms, Anzeige 135 ms je Bild — rund 4 Bilder/s beim Scrollen. Die
+# Anzeige (RGBA -> BGRA) und die Liste (Layoutbaum -> Anzeigeliste, die
+# Leisten) liefen in opt-level 0. Dieselbe Begruendung wie oben: der
+# Nutzer startet target/debug/narsil, also ist die Debug-Zahl die, die er
+# spuert. `narsil` selbst bekommt Stufe 1 (spuerbar schneller, ohne die
+# Bauzeit der grossen Sitzung zu vervielfachen).
+[profile.dev.package.narsil-window]
+opt-level = 3
+[profile.dev.package.narsil-display]
+opt-level = 3
+[profile.dev.package.narsil-chrome]
+opt-level = 3
+[profile.dev.package.narsil-layout]
+opt-level = 3
+[profile.dev.package.narsil-layout-engine]
+opt-level = 3
+[profile.dev.package.narsil-core]
+opt-level = 3
+[profile.dev.package.narsil-dom]
+opt-level = 3
+[profile.dev.package.narsil]
+opt-level = 1
+# RELEASE 08.10.2026: AUCH JS, HTML-PARSER UND NETZ. GEMESSEN (NARSIL_ZEITEN,
+# github.com, Debug-Bau): `laden js` 2 500 ms — die JS-Engine lief in
+# opt-level 0, waehrend Kaskade und Layout schon optimiert waren.
+[profile.dev.package.narsil-jsvm]
+opt-level = 3
+[profile.dev.package.narsil-fmt-html]
+opt-level = 3
+[profile.dev.package.narsil-net]
+opt-level = 3
+[profile.dev.package.narsil-url]
+opt-level = 3

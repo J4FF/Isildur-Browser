@@ -1,0 +1,16 @@
+[package]
+name = "narsil-fmt-html"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+
+[[bin]]
+name = "test_tok"
+path = "src/bin.rs"
+

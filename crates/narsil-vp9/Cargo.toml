@@ -1,0 +1,26 @@
+[package]
+name = "narsil-vp9"
+version = "0.1.0"
+edition = "2024"
+
+# VIDEO_25, 04.10.2026 (Anordnung der Leitung): „Neue grosse Dekoder
+# gehoeren NICHT in ein von allen genutztes Crate, solange sie in Arbeit
+# sind."
+#
+# GEMESSENER GRUND, und er ist nicht die Sauberkeit der Struktur, sondern
+# ein **roter Baum**: `narsil-image` wird von `narsil-layout-engine`,
+# `narsil-page`, `narsil-raster`, `narsil-probe` und `narsil` benutzt. Ein
+# VP9-Dekoder, der in Arbeit ist, macht **jeden** Testlauf in **allen**
+# diesen Crates rot — und nicht an seinem eigenen Fehler, sondern an
+# einem, den niemand dort gesucht hat.
+#
+# GEMESSENE ENTSCHEIDUNG, warum die Abhaengigkeit auf **eine** Zeile
+# begrenzt ist: `vp8::BoolDekoder` ist der Boolean-Decoder, und der ist
+# RFC 6386 §7.3 wortgleich und seit VIDEO_6 **bitgenau** geprueft. Ein
+# zweiter Decoder waere eine zweite Kopie derselben Rechnung, und zwei
+# Kopien driften (VIDEO_24).
+[dependencies]
+narsil-image = { path = "../narsil-image" }
+
+[lints]
+workspace = true

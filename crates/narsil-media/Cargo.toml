@@ -1,0 +1,15 @@
+[package]
+name = "narsil-media"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+narsil-image = { path = "../narsil-image" }
+# 2026-10-15: the VP9 decoder for the player (`frame_decoder`). The
+# VP9 tests reach back to this crate as a dev-dependency only.
+narsil-vp9 = { path = "../narsil-vp9" }
+
+[lints]
+workspace = true

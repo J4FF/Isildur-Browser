@@ -1,0 +1,37 @@
+[package]
+name = "narsil-net"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+# KEINE Fremd-Crates (ADR-030). Nur std: TcpStream, HashMap, Instant.
+narsil-cache = { path = "../narsil-cache" }
+narsil-compress = { path = "../narsil-compress" }
+# HTTPS. `narsil-tls` ist selbst nur std und kein Fremd-Crate, die
+# Abhaengigkeit bleibt also bei der eigenen Regel ADR-030. `TlsStrom`
+# implementiert `Read + Write`; `narsil-net` packt ihn in `Box<dyn Leitung>`
+# und sonst aendert sich hier nichts.
+narsil-tls = { path = "../narsil-tls" }
+
+# added 04.10.2026, Rolle NETZTEMPO. **`narsil-fmt-html` als TEST-Abhaengigkeit.**
+#
+# WARUM: mein Ladezeit-Test hat die Ressourcen **mit Regex** aus dem HTML
+# gesucht, und das hat **28 Fehler** erzeugt (news.ycombinator 4/4 und
+# debian 21/21 mit **0 Byte** — es kam gar kein Abruf zustande). Die Leitung
+# sagt: „aus dem echten HTML-Parser statt Regex". `narsil_fmt_html::parse_html`
+# ist der Parser, den `narsil` selbst benutzt (`narsil/src/blaetter.rs:30`:
+# `use narsil_fmt_html::HtmlNode`).
+#
+# **UND WARUM DAS KEINE ZWEITE WAHRHEIT IST:** dieselbe Crate, dieselbe
+# Funktion — mein Test liest, was `narsil` liest. Ein eigener Extraktor in
+# `narsil-net` waere **zweimal** dieselbe Wahrheit und wuerde genau die Fehler
+# machen, die ich jetzt gemessen habe.
+#
+# **ES IST NUR EINE DEV-ABHAENGIGKEIT:** sie gilt fuer `tests/`, nicht fuer die
+# Bibliothek, und `narsil-fmt-html` haengt **nicht** von `narsil-net` ab (also kein
+# Zyklus).

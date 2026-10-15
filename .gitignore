@@ -1,0 +1,46 @@
+/target*/
+/*target*
+*.png
+*.webp
+*.mp4
+*.webm
+/scratch/
+/team/log/*
+/probe/*
+
+# Testdaten und Design-Vorlagen gehoeren ins Repo (Leitung 04.10.: sonst fehlen sie beim frischen Auschecken)
+!crates/*/tests/daten/**
+!crates/*/tests/**/*.png
+!crates/*/tests/**/*.webm
+!crates/*/tests/**/*.webp
+!team/design/**
+!team/testseiten/**
+
+# 05.10.2026: DIE MESSREFERENZEN. Ohne sie gibt es keine Firefox-Vergleichszahl
+# (siehe `team/BEFUND_MESSKETTE_05_10.md`): `team/log/` ist ignoriert, und die
+# 12 Referenzbilder liegen genau dort. GEMESSEN: 1,9 MB gesamt.
+!team/log/firefox_ref/
+!team/log/firefox_ref/**
+
+# 05.10.2026: DIE TESTDATEN AUS `probe/`. `/probe/` ist ignoriert, aber
+# `layout-testseite.html`, `tabellen-testseite.html`, `seite/test.html`,
+# `news.css` und `wiki-{0,1,2}.css` werden von 9 Tests gelesen (absolute
+# Pfade). GEMESSEN: ohne sie sind 18 Tests in `narsil-layout-engine` rot.
+# 304 KB, nur HTML und CSS.
+!/probe/**
+
+# Generierte Analysen, Logs und Testausgaben
+/graphify-out/
+/mutation_md/
+/out.ppm
+*.bak
+*.bak.*
+/werkzeuge/*_log.txt
+/crates/narsil/tests/seiten/canvas_test_*.html
+/crates/narsil/tests/seiten/tab_leiste_*.html
+/crates/narsil/tests/seiten/zaehler_*.html
+
+/crates/*/narsil-test-*/
+/crates/*/scratch/
+/crates/narsil-chrome/Downloads/
+/crates/narsil/seiten/zvb_*.html

@@ -1,0 +1,45 @@
+[package]
+name = "narsil-window"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "Fensterschicht und Präsentation. Ab Phase 1b aktiv."
+
+# ADR-020: Dieser Crate erbt die Workspace-Lints NICHT (Cargo verbietet
+# Mischung aus workspace=true und Override). Inhaltlich gilt dasselbe:
+# unsafe ist zu, ausser in src/x11.rs. Mechanik: hier "allow", dafuer
+# #![deny(unsafe_code)] in lib.rs und #[allow] nur auf `mod x11`.
+# grep-Kontrolle: `grep -rn unsafe crates/` trifft nur x11.rs.
+[lints.rust]
+unsafe_code = "allow"
+
+[features]
+# X11-Fenster (ADR-020). Nicht default: Build bleibt ohne libX11 und ohne
+# X-Server moeglich; `cargo test -p narsil-window` braucht kein Display.
+x11 = []
+# Native Fensterwahl: X11 unter Linux, Win32 unter Windows.
+desktop = []
+
+[dependencies]
+narsil-core = { path = "../narsil-core" }
+narsil-display = { path = "../narsil-display" }
+narsil-input = { path = "../narsil-input" }
+
+# GEMESSEN 05.10.2026 (Nachfolge-Agent): `klick_beweis` importiert
+# `X11Surface` (Zeile 44), und das ist nur unter dem Feature `x11`
+# konfiguriert. Ohne diese Zeile bricht **jeder** `cargo test -p
+# narsil-window` ab — auch einer, der kein X11 braucht:
+#     error[E0432]: unresolved import `narsil_window::X11Surface`
+#       note: found an item that was configured out
+#       --> crates/narsil-window/src/lib.rs:27:14
+#     error: could not compile `narsil-window` (example "klick_beweis")
+#
+# GEMESSENE ENTSCHEIDUNG, warum `required-features` und kein `#[cfg]`
+# im Beispiel: das Beispiel ist ein **Weg-Zeuge** fuer den X11-Pfad
+# (XTest-Klick durch die Crate, die `narsil` benutzt). `#[cfg(feature)]`
+# wuerde die Datei auf eine leere `main` herunterwerfen — dann waere der
+# Aufruf stumm erfolgreich und niemand saehe, dass der Zeuge fehlt.
+# `required-features` sagt Cargo: **das Beispiel wird gar nicht gebaut**,
+# solange das Feature aus ist. Das ist eine offene Aussage statt einer
+# stillen.

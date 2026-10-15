@@ -1,0 +1,32 @@
+[package]
+name = "narsil-fmt-text"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+publish = false
+description = "Klartext-Renderer: Textdatei -> Knoten fuer die Display-Liste."
+
+# ADR-039, DIE PYRAMIDE: diese Crate darf NUR narsil-core kennen.
+#
+# Kein narsil-dom (sie legt nichts in einen Baum), kein narsil-parser
+# (Klartext ist keine .narsil-Sprache), kein narsil-layout, kein narsil-text.
+#
+# WARUM GERADE NICHT narsil-text, obwohl die Zeilenbreite von dort kommt:
+# narsil-text weiss, wie breit ein ZEICHEN ist. Diese Crate muss wissen,
+# wie breit eine ZEILE sein darf — das ist eine andere Frage, und sie
+# gehoert hierher. Die Zeichenbreite kommt als `Massstab` von aussen
+# (siehe lib.rs), damit narsil-fmt-text die Schrift nicht kennen muss.
+#
+# DER TEST braucht mehr: er misst das fertige Bild, und der Weg dorthin
+# fuehrt ueber Layout und Raster. Dev-only — der normale Bau dieser
+# Crate kennt diese vier nicht.
+#
+# AGENT1, 06:07: das Manifest war ein EIGENER Workspace (`[workspace]` am
+# Ende), weil das Wurzel-Manifest nicht im WRITE_SCOPE lag. BEIDES IST
+# ERLEDIGT: narsil-fmt-text steht jetzt in der `members`-Liste der Wurzel,
+# und die Sektion [workspace] ist entfernt. Du musst die Wurzel-Cargo.toml
+# nie wieder anfassen. Aus dem Kommentar "fuer Agent1" ist damit die
+# Antwort "erledigt".
+[dependencies]
+narsil-core = { path = "../narsil-core" }
+

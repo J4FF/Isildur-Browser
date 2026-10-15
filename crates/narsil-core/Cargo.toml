@@ -1,0 +1,12 @@
+[package]
+name = "narsil-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "Gemeinsame Werttypen der Narsil-Pipeline: Geometrie, Farbe, Laengen, Stile."
+
+[lints]
+workspace = true
+
+[dependencies]

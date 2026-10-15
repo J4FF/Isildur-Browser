@@ -1,0 +1,22 @@
+[package]
+name = "narsil-image"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+# B13/Runde 7, Teil 10 (02.10.2026, Rolle BILD): `<text>` braucht eine
+# Schrift und einen Glyphen-Rasterisierer. GEMESSENE GRUNDLAGE: cairosvg
+# rasterisiert mit FreeType (fc-match sans -> DejaVuSans.ttf) und PIL mit
+# derselben Schrift trifft 386 von 400 Pixeln auf plus/minus 2. GEMESSENE
+# ENTSCHEIDUNG: `narsil-text` liefert Fontsuche (`find_system_fonts`,
+# `load_system_font`), Glyphenumrisse (`glyph_index`, `glyph_outline`) und
+# den Rasterisierer (`rasterize_outline`). GEMESSENE ENTSCHEIDUNG gegen
+# einen eigenen TrueType-Leser in dieser Crate: `narsil-text` hat KEINE
+# Abhaengigkeit auf `narsil-image` (nur `narsil-compress` und `narsil-core`),
+# es gibt also kein Zirkelrisiko.
+narsil-text = { path = "../narsil-text" }

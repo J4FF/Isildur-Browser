@@ -1,0 +1,34 @@
+[package]
+name = "narsil-fmt-md"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+# ADR-039, DIE PYRAMIDE: NUR narsil-core. Kein narsil-dom (diese Crate legt
+# nichts in einen Baum), kein narsil-parser (Markdown ist keine .narsil-
+# Sprache), kein narsil-layout, kein narsil-text.
+#
+# WARUM NICHT narsil-text, obwohl Absaetze sich umbrechen muessen: narsil-text
+# weiss, wie breit ein ZEICHEN ist. Diese Crate muss wissen, wie breit eine
+# ZEILE sein darf — und das ist die Aufgabe von narsil-fmt-text, das der
+# Aufrufer zuerst aufruft. Diese Crate baut Knoten aus Zeilen, die schon
+# umbrochen sind.
+narsil-core = { path = "../narsil-core" }
+
+# DIE NAHT (29.09.2026, Aufgabe 1): `knoten_zu_zeilen` kennt BEIDE Typen
+# und liegt deshalb in dieser Crate, nicht in `narsil-fmt-text`. Die
+# Pyramide erlaubt genau eine Richtung, und sie zeigt hier, warum.
+#
+# GEMESSEN am 29.09.2026: `narsil-fmt-md` hatte `narsil-fmt-text` NUR unter
+# `[dev-dependencies]` — als Testhilfe. Die Abhaengigkeit war also
+# vorhanden und unbenutzt, was schlimmer ist als gar keine: `cargo tree`
+# zeigte eine Verbindung, die es im Code nicht gab.
+narsil-fmt-text = { path = "../narsil-fmt-text" }
+
+# Der Test geht gegen das fertige Bild, und der Weg dorthin fuehrt ueber
+# Layout und Raster. Dev-only.

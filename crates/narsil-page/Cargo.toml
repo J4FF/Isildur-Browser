@@ -1,0 +1,47 @@
+[package]
+name = "narsil-page"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "HTML und Klartext werden zu Narsil-Dokumenten: Umbruch, Links, Typografie."
+
+[lints]
+workspace = true
+
+[dependencies]
+narsil-core = { path = "../narsil-core" }
+narsil-dom = { path = "../narsil-dom" }
+narsil-layout = { path = "../narsil-layout" }
+narsil-parser = { path = "../narsil-parser" }
+narsil-fmt-html = { path = "../narsil-fmt-html" }
+# Release 15.10.2026 (Agent F): `data:` SVG documents of `filter: url()`.
+narsil-svg = { path = "../narsil-svg" }
+# I2 / H2: die Kaskade. `team/VERTRAG_CSS.txt` ist der Vertrag; geaendert
+# wird er nur ueber `team/WUNSCH_HTML.txt`. Am 30.09.2026 um 05:05 war
+# `narsil-css` mitten im Umbau (var()/calc(), danach Flexbox) und baute
+# nicht; um 05:20 war es gruen. Belege: `team/WUNSCH_HTML.txt`.
+narsil-css = { path = "../narsil-css" }
+# A-ADBLOCK (Koordination 01.10.2026, 21:45): der Werbeblocker.
+# `ANFORDERUNGEN.txt`: "Werbeblocker eingebaut, ohne Konfiguration
+# (EasyList-Syntax)".
+#
+# GEMESSENE BEGRUENDUNG fuer den HIER und nicht bei `narsil-net`: die
+# Abfrage braucht den Host der SEITE. `$domain=a.de` bedeutet in
+# EasyList "die Seite, nicht das Ziel", und `@@||wikipedia.org^` ist eine
+# Ausnahme fuer die Seite. Ohne diesen Host wuerde eine Werberegel von
+# `doubleclick.net` auch auf wikipedia.org greifen, und die
+# Nachrichtenseiten wuerde ihre Bilder verlieren.
+#
+# `narsil` (Rolle HTML) haengt den Filter vor seinen `narsil_net::fetch`
+# und ruft `werbung::Werbung::entscheide`.
+narsil-adblock = { path = "../narsil-adblock" }
+# I5: Markdown -> HTML. `narsil-fmt-md` baut Knoten, keine Seiten (ADR-039);
+# wer daraus eine Seite macht, ist der Aufrufer — siehe `src/markdown.rs`.
+narsil-fmt-md = { path = "../narsil-fmt-md" }
+narsil-fmt-text = { path = "../narsil-fmt-text" }
+narsil-text = { path = "../narsil-text" }
+
+# Nur fuer die Tests: der Klick-Test braucht ein echtes Layout, um zu
+# wissen, wo der Link im Bild liegt. Ohne Layout koennte er nur pruefen,
+# dass die Map existiert — nicht, dass ein Klick ihn findet.

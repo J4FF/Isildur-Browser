@@ -1,0 +1,16 @@
+[package]
+name = "narsil-wasm"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+# ADR-030: KEINE Fremd-Crates. Nur std. Auch keine Abhaengigkeit auf
+# narsil-js/narsil-jsvm: die JS-Anbindung (W4) laeuft ueber einen Merkmals-
+# Haken (`js::JsHaken`), den die JS-Crate selbst implementiert. So bleibt
+# diese Crate auch dann baubar, wenn narsil-jsvm in einer Zwischenbearbeitung
+# ist (dieselbe Begruendung wie in narsil-jsvm/Cargo.toml).
+[dependencies]

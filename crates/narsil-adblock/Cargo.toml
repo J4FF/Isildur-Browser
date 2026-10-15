@@ -1,0 +1,14 @@
+[package]
+name = "narsil-adblock"
+version = "0.1.0"
+edition = "2024"
+description = "EasyList-Parser und -Pruefer fuer Anfrage- und kosmetische Regeln (A-ADBLOCK, Rolle CSS)"
+license = "MIT"
+
+# ADR-030: keine Fremd-Crates. Nur std. Der Parser arbeitet auf `&str`
+# und `Vec`, der Pruefer auf einem eigenen `HashMap` — es gibt hier
+# nichts zu holen, was std nicht kann.
+[dependencies]
+
+# Jede Crate hat Tests im gleichen Paket; es gibt kein `[dev-dependencies]`,
+# weil es keine gibt.

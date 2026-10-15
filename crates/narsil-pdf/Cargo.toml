@@ -1,0 +1,54 @@
+[package]
+name = "narsil-pdf"
+# added 03.10.2026: Die Werte sind **ausgeschrieben** statt
+# `version.workspace = true`, weil diese Crate bis zur Eintragung in
+# `members` ihr eigener Workspace-Root ist (siehe unten) und ein
+# leerer `[workspace]`-Abschnitt keine geerbten Werte liefert.
+# Dieselben Zahlen wie im Workspace-Manifest, Zeile 68ff.
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+publish = false
+description = "PDF-Parser und Seiten-Rendering fuer narsil (Rolle SERVER, Punkt A-PDF)."
+[lints.rust]
+# Architekturregel 6, wie im Workspace-Manifest (Zeile 77): kein
+# `unsafe`. `lib.rs` sagt dasselbe noch einmal mit `#![forbid]`,
+# weil ein `forbid` im Manifest allein stillschweigend fallen kann,
+# wenn jemand die Modulgrenze verschiebt.
+unsafe_code = "forbid"
+[features]
+# added 03.10.2026, SERVER A-PDF: `bilder` schaltet die zwei Stellen an,
+# die `narsil-image` brauchen — `jpeg_lesen` fuer DCTDecode-Bilder und
+# `png_schreiben` fuer die Ausgabe.
+#
+# WARUM ueberhaupt ein Schalter: am 03.10. war `narsil-image` zwei Stunden
+# lang nicht baubar (fremde Baustelle `vp8l.rs`, gemeldet in
+# `team/PROBLEME.txt`). Ohne den Schalter haette ich den ganzen Rest
+# (Parser, Filter, Content-Stream, Schriften, Pfadfuellung, Grenzen)
+# nicht **einmal** pruefen koennen, nur weil zwei Aufrufe eine
+# Bild-Crate brauchen.
+#
+# Der Schalter ist keine Ausrede: ohne ihn baut die Crate, rendert
+# Pfade und Text, und schreibt **keine** PNG-Datei. Das ist ein
+# ehrlicher Stand, kein stiller — `Seitenbild::png` ist dann leer und
+# die Abnahme sagt es (sie verlangt einen PNG-Magic-Byte-Start).
+default = ["bilder"]
+bilder = ["dep:narsil-image"]
+
+[dependencies]
+narsil-core = { path = "../narsil-core" }
+narsil-compress = { path = "../narsil-compress" }
+narsil-image = { path = "../narsil-image", optional = true }
+narsil-raster = { path = "../narsil-raster" }
+narsil-text = { path = "../narsil-text" }
+
+# added 03.10.2026, SERVER A-PDF: Solange `narsil-pdf` nicht in der
+# `members`-Liste des Workspace steht (gemeldet 03.10. 19:50 in
+# `team/PROBLEME.txt`), baut cargo das Paket nicht. Diese Zeile macht
+# es zum eigenen Workspace-Wurzel, damit ich es ueberhaupt bauen und
+# testen kann.
+#
+# **DIE ZEILE MUSS WEG, SOBALD `crates/narsil-pdf` in `members` steht.**
+# Sonst bricht der ganze Workspace-Bau ab ("member is a workspace root").
+# Sie steht in diesem Manifest und sonst nirgends; `LIESMICH.txt`
+# sagt dasselbe noch einmal.

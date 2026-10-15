@@ -1,0 +1,23 @@
+[package]
+name = "narsil-raster"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "Software-Rasterizer: DisplayList -> RGBA8-Framebuffer."
+
+[lints]
+workspace = true
+
+[dependencies]
+narsil-compress = { path = "../narsil-compress" }
+narsil-core = { path = "../narsil-core" }
+narsil-display = { path = "../narsil-display" }
+narsil-image = { path = "../narsil-image" }
+# W5G: die MESSUNG (Umbruch, Boxbreite, Vorschub). Liegt in
+# `narsil-layout`, weil `narsil-page` und dieser Crate sie beide brauchen.
+narsil-layout = { path = "../narsil-layout" }
+narsil-text = { path = "../narsil-text" }
+# Release 15.10.2026 (Agent F): `filter` on CSS boxes (the filter engine).
+narsil-svg = { path = "../narsil-svg" }
+

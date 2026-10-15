@@ -1,0 +1,15 @@
+[package]
+name = "narsil-svg"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "SVG renderer on the narsil-canvas rasterizer: document tree, CSS cascade, shapes, paint servers, clipping, masking, markers, text and filter effects."
+
+[lints]
+workspace = true
+
+[dependencies]
+narsil-canvas = { path = "../narsil-canvas" }
+narsil-text = { path = "../narsil-text" }
+narsil-image = { path = "../narsil-image" }

@@ -1,0 +1,62 @@
+[package]
+name = "narsil-jsvm"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[features]
+default = []
+# A4: die Anbindung an `narsil-net` (`netz::NarsilNet`). AUS, weil
+# `narsil-net` an `narsil-tls` haengt und diese Crate in einer anderen
+# Schreib-Scope liegt: ein Zwischenstand dort wuerde jeden Bau von
+# `narsil-jsvm` (inklusive Tests und Fuzzer) rot machen. GEMESSEN am
+# 30.09. 21:55: `narsil-tls` war in einer Zwischenbearbeitung und
+# `narsil-jsvm test` brach am Fremd-Crate ab. Die Einbettung (narsil)
+# schaltet die Anbindung ein: `narsil-jsvm = { features = ["narsil-net"] }`.
+narsil-net = ["dep:narsil-net"]
+
+[dependencies]
+# Gemeinsamer Betriebssystem-CSPRNG fuer TLS und Web Crypto auf Linux/Windows.
+narsil-tls = { path = "../narsil-tls" }
+# A4: `fetch()` laeuft ueber `narsil-net` (die einzige Stelle, die diese
+# Crate nennt: `netz::NarsilNet`). Tests benutzen eine eigene
+# `Netzbau`-Implementierung und brauchen kein Netz. `narsil-net` haengt an
+# `narsil-cache`/`narsil-compress`/`narsil-tls` — alle eigene Crates ohne
+# Fremd-Abhaengigkeiten (ADR-030).
+narsil-net = { path = "../narsil-net", optional = true }
+# E (06.10.2026, Masterplan): DER GEMEINSAME URL-PARSER.
+#
+# GEMESSEN: `fetch('daten')` verlor den Namen (der handgeschnittene Pfad
+# nahm `url[url.find('/')..]` — ohne Schraegstrich wurde daraus `/`), und
+# `import './x.js?v=1'` verlor die Anfrage. `narsil-url` loest relative
+# Referenzen nach RFC 3986 auf (`loese_auf`) und traegt Query/Fragment im
+# Pfad. Ohne eigene Abhaengigkeiten — die Crate steht ganz unten im Baum.
+narsil-url = { path = "../narsil-url" }
+# Release 11.10.2026: `TextDecoder` dekodiert mit den Kodierungen des WHATWG
+# Encoding Standard aus narsil-fmt-html (keine eigenen Abhaengigkeiten, also
+# kein Zyklus).
+narsil-fmt-html = { path = "../narsil-fmt-html" }
+# 2026-10-15: the WebAssembly JS API (`web_wasm.rs`) runs modules on the
+# project's own wasm engine (std only, no dependencies of its own).
+narsil-wasm = { path = "../narsil-wasm" }
+# 2026-10-15: CompressionStream/DecompressionStream (`web_compression.rs`).
+narsil-compress = { path = "../narsil-compress" }
+# 2026-10-15: Web Audio `decodeAudioData` (`web_audio.rs`): the project's
+# decoders (WAV, FLAC, Ogg Vorbis/FLAC, MP3, WebM Vorbis); no dependencies.
+narsil-audio = { path = "../narsil-audio" }
+# WELLE6/V1 sagt „Lexer/Parser/AST aus narsil-js wiederverwenden". In der
+# Praxis ist das eine **Kopie**: `ast`, `lex` und `parse` sind in narsil-js
+# `mod`-Privat (nicht `pub`), und narsil-js steht in dieser Welle im
+# Schreib-Scope der Rolle INTEGRATION/HTML — ich darf dort nichts aendern
+# und kann die Module nicht oeffentlich machen. Die Kopien sind im Kopf
+# jeder Datei als Uebernahme gekennzeichnet.
+#
+# Deshalb haengt diese Crate NICHT an narsil-js: ein Abhaengigkeitspfad
+# wuerde jeden Zwischenstand der anderen Crate zum Build-Problem machen
+# (gemessen am 30.09. 17:09: narsil-js war beim Bauen in einer
+# Zwischenbearbeitung). Das Orakel (`tests/orakel.rs`) vergleicht gegen
+# die FAELLE in `crates/narsil-js/tests/orakel/` — nur lesend, ohne Crate.

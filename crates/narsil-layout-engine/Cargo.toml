@@ -1,0 +1,31 @@
+[package]
+name = "narsil-layout-engine"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "Layout-Engine: Document -> LayoutTree -> DisplayList."
+
+[lints]
+workspace = true
+
+[dependencies]
+narsil-core = { path = "../narsil-core" }
+narsil-dom = { path = "../narsil-dom" }
+narsil-layout = { path = "../narsil-layout" }
+narsil-display = { path = "../narsil-display" }
+narsil-text = { path = "../narsil-text" }
+# Rolle LAYOUT (W7, L1-L4): die Platzierung ruft die GLEICHEN Funktionen
+# auf, die die Koordination in narsil-css geprueft hat — `lege_flex`,
+# `lege_raster`, `absolut_waagerecht`, `float_x`, `clear_y`. Es gibt
+# darum keinen zweiten Layout-Algorithmus im Projekt, sondern nur einen.
+# Nur eine Pfad-Abhaengigkeit, kein Fremd-Crate (ADR-030).
+narsil-css = { path = "../narsil-css" }
+# Release 15.10.2026 (Agent F): `clip-path` basic shapes and their coverage.
+narsil-svg = { path = "../narsil-svg" }
+narsil-canvas = { path = "../narsil-canvas" }
+
+# Nur fuer Tests: der Kettentest liest examples/hello.narsil und schickt es
+# durch Parser -> Document -> layout(). Die Engine selbst haengt NICHT vom
+# Parser ab (sie ist stromabwaerts), die Abhaengigkeit existiert ausschliess-
+# lich in tests/ (Anweisung NOTE_0004_ANGENOMMEN, Abschnitt 3).

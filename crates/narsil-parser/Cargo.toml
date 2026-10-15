@@ -1,0 +1,33 @@
+[package]
+name = "narsil-parser"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "Lexer und Parser der Narsil-Sprache, erzeugt einen narsil_dom::Document."
+
+[lints]
+workspace = true
+
+[dependencies]
+narsil-core = { path = "../narsil-core" }
+narsil-dom = { path = "../narsil-dom" }
+
+# NUR FUER TESTS, und nur fuer EINEN Test: `tests/das_bild.rs`.
+#
+# Warum ueberhaupt: TASK_0029 verlangt "EIN Test, der gegen das fertige
+# BILD geht, nicht gegen narsil-text". Ein solcher Test braucht die Kette
+# Parser -> Layout -> DisplayList -> Raster, und die liegt in zwei fremden
+# Crates. Ohne diese Zeilen kann der Test nicht gebaut werden — er ist
+# kein Komfort, sondern die Bedingung.
+#
+# Warum kein ZYKLUS: `narsil-parser` ist eine der untersten Crates. Diese
+# Abhaengigkeiten gelten NUR fuer `cargo test`, nie fuer den Bau der
+# Bibliothek. `narsil-parser` als Abhaengigkeit von `narsil-display` (das
+# `narsil-parser` braucht) bleibt unberuehrt — Cargo loest dev-dependencies
+# getrennt auf, und der normale Build zieht keine dieser Zeilen.
+#
+# `narsil-text` wird gebraucht, weil der Test die eingebundene Schrift
+# selber an `rasterize_with_font` geben muss: `rasterize()` OHNE Font
+# ueberspringt jeden Text (GEMESSEN 05:22), und der Test waere dann
+# gruen, ohne etwas zu pruefen.

@@ -1,0 +1,73 @@
+[package]
+name = "narsil-devtools"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "Entwicklerwerkzeuge: Geruest, Elemente, Konsole, Quellen, Netzwerk, Leistung, Speicher, WebAssembly."
+
+[lints]
+workspace = true
+
+# ---------------------------------------------------------------------------
+# ADR-030: KEINE Fremd-Crates. Nur std (plus die Crates dieses Workspace).
+# ---------------------------------------------------------------------------
+[dependencies]
+# DER VERTRAG DER OBERFLAECHE (D1): die Entwicklerwerkzeuge liefern eine
+# DisplayList, der Aufrufer rastert sie. Das ist derselbe Weg, den
+# narsil-chrome geht, und darum gehoert der Rasterer NICHT hierher.
+narsil-core = { path = "../narsil-core" }
+narsil-display = { path = "../narsil-display" }
+
+# D1: die Farben der Werkzeuge sind EIGENE Farben (`thema.rs`), keine aus
+# `narsil-chrome::thema::Palette`.
+#
+# GEMESSENE ENTSCHEIDUNG (01.10.2026, 19:0x): `narsil-chrome` stand hier als
+# dev-Pfad fuer EINEN Testvergleich („meine Werkzeugfarbe ist nicht die
+# Fensterfarbe"). Die Abhaengigkeit hat aber den ganzen Bau an eine fremde
+# Crate gehaengt, die in Arbeit war (`narsil-chrome/src/suche.rs:312`
+# „unclosed delimiter", 10 Fehler, gemessen 19:0x und 19:1x) — und dieser
+# Crate gehoert Rolle UI, nicht mir. Ein Farbvergleich ist den Aufwand
+# nicht wert; die Werkzeuge benutzen denselben WEG (DisplayList ->
+# narsil-raster), und das ist in `tests/bild_beweis.rs` gemessen.
+
+# D2: das Dokument (Knoten, Stil je Knoten) und die Bruecke zum CSS-Baum.
+# `Seite` traegt `css_baum`, `css_zu_dom` und `dom_zu_ord` — damit wird aus
+# einem DOM-Knoten ein Element mit Tag/Klassen und daraus ein berechneter Stil.
+narsil-dom = { path = "../narsil-dom" }
+narsil-page = { path = "../narsil-page" }
+narsil-fmt-html = { path = "../narsil-fmt-html" }
+narsil-css = { path = "../narsil-css" }
+
+# D2: das gelegte Layout, um den Knoten in der Seite hervorzuheben
+# (`border_box` je Kasten), und die Schrift zum Messen.
+narsil-layout = { path = "../narsil-layout" }
+narsil-layout-engine = { path = "../narsil-layout-engine" }
+
+# D3 (Konsole) und D5 (Quellen): die JavaScript-Engine. `ausfuehren`,
+# `konsole()` und `JsFehler::Syntax { zeile, spalte }` sind die drei
+# Anknuepfungspunkte, die es heute gibt (gemessen 01.10., siehe Bericht).
+narsil-jsvm = { path = "../narsil-jsvm" }
+
+# D16 (03.10., Auftrag der Leitung): die ECHTE Breite eines Textes, damit der
+# DOM-Baum den Vorschub nicht mehr schaetzt. GEMESSEN, warum es noetig war:
+# mit einer gemessenen Durchschnittsbreite (5,97 px) lagen im Bild
+# `<htmllang="de">`, `id="gross"class="kasten"` und die `>`-Zeichen auf den
+# Pfeilen — jede Grenze zwischen zwei Stuecken ein eigener Fehler.
+#
+# GEMESSENE ENTSCHEIDUNG, warum eine Abhaengigkeit und kein Wunsch an
+# SCHRIFT: `Schriftstapel::breite` (narsil-text/src/stapel.rs:686) ist genau
+# die Zahl, die der Rasterer beim Zeichnen benutzt — sie zu schaetzen hiesse,
+# dieselbe Rechnung zweimal zu haben. Das ist lesende Nutzung einer fremden
+# Crate; `narsil-text` bleibt Eigentuemer von SCHRIFT, es wird hier nichts
+# geaendert. Der oben stehende Kommentar zu `narsil-chrome` bleibt gueltig:
+# es wird keine CRATE geaendert, nur gelesen.
+narsil-text = { path = "../narsil-text" }
+
+# D4: `Request`/`Response`/`NetError` direkt in eine Logzeile wandeln — nicht
+# ueber eine eigene Zwischenstruktur, sonst gaebe es zwei Netzprotokolle.
+narsil-net = { path = "../narsil-net" }
+
+# D7: der echte Cookie-Speicher des Browsers (`cookies_fuer_anfrage`).
+narsil-browser = { path = "../narsil-browser" }
+

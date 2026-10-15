@@ -1,0 +1,25 @@
+[package]
+name = "narsil-css"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+# Rolle LAYOUT (W7, L1-L4): `layout_plan` wandelt ein `Berechnet` in
+# das `LayoutStil` des Layout-Plans. Nur eine Pfad-Abhaengigkeit, kein
+# Fremd-Crate (ADR-030).
+narsil-layout = { path = "../narsil-layout" }
+# K16 (02.10.2026): nur fuer `layout_plan_setze`. `LayoutPlan::set` und
+# `set_grenzen` nehmen einen `narsil_dom::NodeId`, und `narsil-layout`
+# re-exportiert ihn nicht (GEMESSEN: `grep "pub use.*NodeId"` in
+# crates/narsil-layout/src ergibt nichts). ALSO: Pfad-Abhaengigkeit, kein
+# Fremd-Crate, und sie wird nur von EINER Funktion benutzt.
+#
+# ALTERNATIVE, falls die Koordination das lieber anders loest: eine
+# Zeile `pub use narsil_dom::NodeId;` in `narsil-layout/src/lib.rs`, dann
+# kann diese Abhaengigkeit wieder weg. Als W21 gemeldet.
+narsil-dom = { path = "../narsil-dom" }

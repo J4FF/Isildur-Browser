@@ -1,0 +1,13 @@
+[package]
+name = "narsil-dom"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "Dokumentbaum der Narsil-Sprache (Document Tree)."
+
+[lints]
+workspace = true
+
+[dependencies]
+narsil-core = { path = "../narsil-core" }
